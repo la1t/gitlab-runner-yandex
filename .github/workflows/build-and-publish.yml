@@ -23,9 +23,9 @@ jobs:
         with:
           push: true
           tags: anatolygusev/gitlab-runner-yandex:latest
-          build-args:
-            - TARGETPLATFORM=linux/amd64
-            - GITLAB_RUNNER_VERSION=14.9.1
-            - DOCKER_MACHINE_VERSION=0.16.2
-            - DUMB_INIT_VERSION=1.2.2
-            - DOCKER_MACHINE_DRIVER_YANDEX_VERSION=0.1.35
+          build-args: |
+            TARGETPLATFORM=linux/amd64
+            GITLAB_RUNNER_VERSION=14.9.1
+            DOCKER_MACHINE_VERSION=0.16.2
+            DUMB_INIT_VERSION=1.2.2
+            DOCKER_MACHINE_DRIVER_YANDEX_VERSION=0.1.35

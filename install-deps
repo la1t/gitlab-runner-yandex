@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -eEo pipefail
+
+TARGETPLATFORM="$1"
+GITLAB_RUNNER_VERSION="$2"
+DOCKER_MACHINE_VERSION="$3"
+DUMB_INIT_VERSION="$4"
+DOCKER_MACHINE_DRIVER_YANDEX_VERSION="$5"
+
+case "${TARGETPLATFORM}" in 
+  "linux/arm64")
+    ARCH=arm64
+    GITLAB_RUNNER_ARCH=arm
+    DOCKER_MACHINE_ARCH=aarch64
+    DUMB_INIT_ARCH=aarch64
+    DOCKER_MACHINE_DRIVER_YANDEX_ARCH=arm64
+    ;;
+  "linux/amd64" | "")
+    ARCH=amd64
+    GITLAB_RUNNER_ARCH=amd64
+    DOCKER_MACHINE_ARCH=x86_64
+    DUMB_INIT_ARCH=x86_64
+    DOCKER_MACHINE_DRIVER_YANDEX_ARCH=amd64
+    ;;
+  *)
+    echo "Unexpected TARGETPLATFORM value: ${TARGETPLATFORM}"
+    ;;
+esac;
+
+wget -nv "https://gitlab.com/gitlab-org/gitlab-runner/-/releases/v${GITLAB_RUNNER_VERSION}/downloads/binaries/gitlab-runner-linux-${GITLAB_RUNNER_ARCH}" \
+  -O /usr/bin/gitlab-runner
+chmod +x /usr/bin/gitlab-runner
+ln -s /usr/bin/gitlab-runner /usr/bin/gitlab-ci-multi-runner
+gitlab-runner --version
+
+wget -nv "https://github.com/docker/machine/releases/download/v${DOCKER_MACHINE_VERSION}/docker-machine-Linux-${DOCKER_MACHINE_ARCH}" \
+  -O /usr/bin/docker-machine
+chmod +x /usr/bin/docker-machine
+docker-machine --version
+
+wget -nv "https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_${DUMB_INIT_ARCH}" \
+  -O /usr/bin/dumb-init
+chmod +x /usr/bin/dumb-init
+dumb-init --version
+
+wget -nv "https://github.com/yandex-cloud/docker-machine-driver-yandex/releases/download/v${DOCKER_MACHINE_DRIVER_YANDEX_VERSION}/docker-machine-driver-yandex_${DOCKER_MACHINE_DRIVER_YANDEX_VERSION}_linux_${DOCKER_MACHINE_DRIVER_YANDEX_ARCH}.tar.gz" \
+  -O /tmp/docker-machine-driver-yandex.tar.gz
+tar -xf /tmp/docker-machine-driver-yandex.tar.gz -C /tmp/
+ls /tmp/
+mv /tmp/docker-machine-driver-yandex /usr/bin/docker-machine-driver-yandex
